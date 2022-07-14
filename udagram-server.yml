@@ -35,8 +35,8 @@ Resources:
           !Sub "${EnvironmentName}-VPCID"
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: 8080
-        ToPort: 8080
+        FromPort: 80
+        ToPort: 80
         CidrIp: 0.0.0.0/0
       - IpProtocol: tcp
         FromPort: 22
@@ -59,7 +59,6 @@ Resources:
           cd /var/www/html
           echo "Udacity Demo Web Server Up and Running!" > index.html
       ImageId: ami-00ddb0e5626798373
-      KeyName: udacityKey
       SecurityGroups:
       - Ref: WebServerSecGroup
       InstanceType: t3.small
@@ -117,9 +116,23 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 8
       HealthyThresholdCount: 2
-      Port: 8080
+      Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 5
       VpcId: 
         Fn::ImportValue:
           Fn::Sub: "${EnvironmentName}-VPCID"
+
+Outputs:
+  LoadBalancerDNSName:
+    Description: DNS Name of the web application
+    Value:
+      Fn::Join:
+        - ""
+        - - "http://"
+          - Fn::GetAtt: WebAppLB.DNSName
+    Export:
+      Name:
+        Fn::Sub: "${EnvironmentName}-DNS-NAME"
+   
+    
